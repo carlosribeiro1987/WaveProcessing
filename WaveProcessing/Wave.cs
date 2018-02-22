@@ -15,7 +15,13 @@ namespace WaveProcessing {
         private ushort _maxLevel;
         private byte[] _data;
 
+        public enum WaveFileMode { Read, Write, ReadWrite };
+
+
         public Wave() {
+        }
+        public Wave(string filePath) {
+
         }
 
         public bool ReadWaveHeader(string inputPath) {
@@ -51,20 +57,6 @@ namespace WaveProcessing {
             return true;
         }
 
-        public byte[] GetWaveData(string wavPath) {
-            try {
-                FileStream stream = new FileStream(wavPath, FileMode.Open, FileAccess.Read);
-                byte[] data = new byte[stream.Length - 44];
-                stream.Position = 44;
-                stream.Read(data, 0, data.Length);
-                stream.Close();
-                return data;
-            }
-            catch(IOException ex) {
-                throw ex;
-            }
-        }
-
         public bool WriteWaveHeader(string filename, string outputDir) {
             if (string.IsNullOrWhiteSpace(outputDir)) {
                 throw new WaveException("The output directory path cannot be empty.");
@@ -72,7 +64,8 @@ namespace WaveProcessing {
             if (string.IsNullOrWhiteSpace(filename)) {
                 throw new WaveException("Output file name cannot be empty.");
             }
-            if (Path.GetExtension(filename).ToLower() != ".wav" || string.IsNullOrWhiteSpace(Path.GetExtension(filename))) {
+
+            if (Path.GetExtension(filename).ToLower() != ".wav" || Path.GetExtension(filename).ToLower() != ".wave") {
                 filename = Path.GetFileNameWithoutExtension(filename) + ".wav";
             }
             string filePath = Path.Combine(outputDir, filename);
@@ -111,7 +104,7 @@ namespace WaveProcessing {
                 writer.Close();
                 stream.Close();
             }
-            catch(Exception ex) {
+            catch (Exception ex) {
                 throw ex;
             }
         }
